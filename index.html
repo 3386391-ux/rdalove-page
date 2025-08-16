@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>我和蓉蛋的纪念日</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="preload" href="music.mp3" as="audio">
   <link rel="preload" href="background.jpg" as="image">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,7 +16,7 @@
         linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%), 
         url('background.jpg') no-repeat center center; 
       background-size: cover; 
-      background-attachment: scroll; /* 移动端 scroll，避免空白 */
+      background-attachment: scroll;
       position: relative; 
     }
     .overlay { background-color: rgba(0,0,0,0.4); position: absolute; inset: 0; z-index: 1; }
@@ -36,7 +35,6 @@
     .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
     audio { display: none; }
 
-    /* 平板及以上：允许 fixed 背景 */
     @media (min-width: 768px) {
       body { background-attachment: fixed; }
       h1 { font-size: clamp(2rem, 5vw, 3rem); }
@@ -65,7 +63,7 @@
       <button id="musicToggle">播放音乐 🎵</button>
     </div>
   </div>
-  <audio id="bgm" loop preload="auto">
+  <audio id="bgm" loop preload="none">
     <source src="music.mp3" type="audio/mpeg">
   </audio>
 
@@ -131,7 +129,7 @@
         return {
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.min(10 * Math.random() + 10, window.innerWidth * 0.02),
+          size: Math.min(8 * Math.random() + 4, window.innerWidth * 0.015),
           speed: Math.random() + 0.5,
           opacity: Math.random()
         };
@@ -140,10 +138,11 @@
       function drawParticles() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "rgba(255,100,150,0.6)";
-        ctx.font = "15px sans-serif";
         particles.forEach(p => {
           ctx.globalAlpha = p.opacity;
-          ctx.fillText("❤", p.x, p.y);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
           p.y -= p.speed;
           if (p.y < -20) Object.assign(p, createParticle(), { y: canvas.height + 10 });
         });
@@ -179,10 +178,10 @@
       }
 
       function typeWriter(text, callback) {
-        quoteEl.innerHTML = '';
+        quoteEl.textContent = '';
         let i = 0;
         const interval = setInterval(() => {
-          quoteEl.innerHTML += text.charAt(i);
+          quoteEl.textContent += text.charAt(i);
           i++;
           if (i >= text.length) {
             clearInterval(interval);
@@ -200,7 +199,7 @@
         });
       }
 
-      function fadeAudio(targetVolume, duration = 1000, callback) {
+      function fadeAudio(targetVolume, duration = 500, callback) {
         const startVolume = audio.volume;
         const startTime = performance.now();
         function step(now) {
@@ -213,49 +212,34 @@
         requestAnimationFrame(step);
       }
 
-      function tryAutoPlay() {
-        audio.volume = 0;
-        audio.play().then(() => {
-          fadeAudio(1, 2000);
-          toggleBtn.textContent = "暂停音乐 ⏸️";
-        }).catch(() => {
-          toggleBtn.textContent = "播放音乐 🎵";
-        });
-      }
-
       toggleBtn.addEventListener("click", () => {
         if (audio.paused) {
+          audio.volume = 1;
           audio.play().then(() => {
-            fadeAudio(1, 2000);
             toggleBtn.textContent = "暂停音乐 ⏸️";
           });
         } else {
-          fadeAudio(0, 1500, () => {
+          fadeAudio(0, 500, () => {
             audio.pause();
             toggleBtn.textContent = "播放音乐 🎵";
           });
         }
       });
 
-      toggleBtn.addEventListener("touchstart", () => {}, { passive: true });
-
-      function animateParticles() {
-        drawParticles();
-        requestAnimationFrame(animateParticles);
-      }
-
       addEventListener("resize", throttle(resizeCanvas, 200));
       resizeCanvas();
 
       document.addEventListener("DOMContentLoaded", () => {
-        tryAutoPlay();
         playQuotes();
         updateLoveDays();
         updateBeijingTime();
         setInterval(updateBeijingTime, 1000);
       });
 
-      animateParticles();
+      (function animateParticles() {
+        drawParticles();
+        requestAnimationFrame(animateParticles);
+      })();
     })();
   </script>
 </body>
