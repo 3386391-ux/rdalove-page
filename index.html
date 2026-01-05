@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>我和蓉蛋的纪念日</title>
+  <title>我们的订婚倒计时</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="preload" href="background.jpg" as="image">
   <style>
@@ -53,11 +53,13 @@
   <div class="overlay"></div>
   <canvas class="particles"></canvas>
   <div class="content">
-    <h1>和蓉蛋在一起的第 <span id="loveDays"></span> 天 <span class="heart">❤️</span></h1>
+    <!-- 更新标题，显示为订婚倒计时 -->
+    <h1>距离我们订婚还有 <span id="countdownDays"></span> 天 <span class="heart">❤️</span></h1>
     <div class="timer-container" id="beijingTimeContainer">
       <div id="datePart"></div>
       <div id="timePart"></div>
     </div>
+    <!-- 修改引号为订婚相关的语句 -->
     <div class="quote" id="quote"></div>
     <div class="music-control">
       <button id="musicToggle">播放音乐 🎵</button>
@@ -72,30 +74,30 @@
       "use strict";
 
       const CONFIG = {
-        startDate: new Date("2024-02-09T00:00:00Z"),
+        // 将日期修改为订婚日期：2026年3月7日
+        startDate: new Date("2026-03-07T00:00:00Z"),
         quotes: [
-          "有你在的日子，每一天都是情人节。",
-          "你笑起来的样子，是我见过最美的风景。",
-          "陪你走过的每一步，都是我最珍贵的回忆。",
-          "时间会老去，但我们的爱不会。",
-          "星河滚烫，你是人间理想。",
-          "我见过的风景很多，但最喜欢的还是你。",
-          "我的眼里只有你，其他人都只是背景。",
-          "我爱你，是从我看到你的那一刻开始，直到永远。",
-          "没有你，我的世界空无一物。",
-          "你是我今生最美的奇迹。",
-          "每天醒来第一件事就是想你，最后一件事也是你。",
-          "你就是我所有的幸福，唯一的幸福。",
-          "在一起，是最美好的相遇。",
-          "你的一句“我爱你”，就是我一生最美的承诺。",
-          "爱你是我这辈子最幸运的事。",
-          "只要你在，世界就足够完美。",
-          "遇见你是我生命中的奇迹。",
+          "和你在一起的每一天，都是我最幸福的时光。",
+          "订婚的那一天，是我们爱情故事的新篇章。",
+          "无论时光如何流转，我将永远爱你。",
+          "我们一起走过的每一步，都充满了爱和期待。",
+          "你是我此生最美的遇见，感谢命运让我们相遇。",
+          "从此以后，我的世界里永远只有你。",
+          "和你共度每一刻，我是如此幸运。",
+          "我们的故事，永远不会结束，只会越来越美好。",
+          "每个愿望，都是与你共度未来的梦想。",
+          "今天的你，是我最想守护的人，明天的你，更是。",
+          "这一生，我愿意与你携手，走遍每一个晨昏。",
+          "你的笑容是我最温暖的阳光，照亮我的人生。",
+          "订婚，只是开始，未来的路，我们一同走。",
+          "你是我这一生最想依靠的人。",
+          "爱你，是我最幸运的事。",
+          "和你在一起，世界就是最完美的模样。",
           "我爱你，直到时间的尽头。"
         ]
       };
 
-      const loveDaysEl = document.getElementById("loveDays");
+      const countdownDaysEl = document.getElementById("countdownDays");
       const datePartEl = document.getElementById("datePart");
       const timePartEl = document.getElementById("timePart");
       const quoteEl = document.getElementById("quote");
@@ -149,12 +151,12 @@
         ctx.globalAlpha = 1;
       }
 
-      function updateLoveDays() {
+      function updateCountdownDays() {
         const now = new Date();
-        const loveDays = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(CONFIG.startDate.getFullYear(), CONFIG.startDate.getMonth(), CONFIG.startDate.getDate())) / 86400000);
-        loveDaysEl.textContent = loveDays;
+        const countdownDays = Math.floor((Date.UTC(CONFIG.startDate.getFullYear(), CONFIG.startDate.getMonth(), CONFIG.startDate.getDate()) - Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+        countdownDaysEl.textContent = countdownDays;
         const nextDay = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + 1));
-        setTimeout(updateLoveDays, nextDay - now);
+        setTimeout(updateCountdownDays, nextDay - now);
       }
 
       function updateBeijingTime() {
@@ -231,7 +233,7 @@
 
       document.addEventListener("DOMContentLoaded", () => {
         playQuotes();
-        updateLoveDays();
+        updateCountdownDays();
         updateBeijingTime();
         setInterval(updateBeijingTime, 1000);
       });
