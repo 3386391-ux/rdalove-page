@@ -1,248 +1,527 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>我们的订婚倒计时</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="preload" href="background.jpg" as="image">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { 
-      height: 100%; 
-      font-family: Arial, sans-serif; 
-      color: white; 
-      overflow: hidden; 
-      background: 
-        linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%), 
-        url('background.jpg') no-repeat center center; 
-      background-size: cover; 
-      background-attachment: scroll;
-      position: relative; 
-    }
-    .overlay { background-color: rgba(0,0,0,0.4); position: absolute; inset: 0; z-index: 1; }
-    .content { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1rem; }
-    h1 { font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem; font-weight: bold; }
-    .timer-container { font-size: 1.1rem; text-align: center; margin-bottom: 0.5rem; }
-    .timer-container > div:first-child { margin-bottom: 10px; }
-    .heart { display: inline-block; font-size: 2rem; animation: heartbeat 1.5s ease-in-out infinite; transform-origin: center; }
-    @keyframes heartbeat { 0%,20%,40%,100%{transform:scale(1);} 10%,30%{transform:scale(1.3);} }
-    .quote { font-size: 1rem; margin-top: 1rem; max-width: 80%; line-height: 1.5; font-style: italic; min-height: 2.5rem; white-space: pre-wrap; position: relative; word-break: break-word; }
-    .quote::after { content: "|"; position: absolute; animation: blink 1s infinite; }
-    @keyframes blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
-    .music-control { margin-top: 1.5rem; }
-    .music-control button { padding: .6rem 1.2rem; font-size: 1rem; border: none; border-radius: .5rem; cursor: pointer; background-color: rgba(255,255,255,.2); color: white; transition: .3s; }
-    .music-control button:hover { background-color: rgba(255,255,255,.4); }
-    .particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-    audio { display: none; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我们的结婚纪念日 ❤️</title>
 
-    @media (min-width: 768px) {
-      body { background-attachment: fixed; }
-      h1 { font-size: clamp(2rem, 5vw, 3rem); }
-      .content { padding: 2rem; }
-      .quote { max-width: 60%; font-size: 1.2rem; }
+<link rel="preload" href="background.jpg" as="image">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:"Microsoft YaHei",Arial,sans-serif;
+    color:#fff;
+
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(0,0,0,.6),
+        rgba(0,0,0,.25),
+        rgba(0,0,0,.6)
+    ),
+    url("background.jpg") center center no-repeat;
+
+    background-size:cover;
+}
+
+.overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.15);
+    z-index:1;
+}
+
+.content{
+    position:relative;
+    z-index:2;
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+    padding:20px;
+}
+
+h1{
+    font-size:clamp(1.8rem,5vw,3.5rem);
+    margin-bottom:15px;
+    text-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+
+.heart{
+    display:inline-block;
+    animation:heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat{
+    0%,20%,40%,100%{
+        transform:scale(1);
+    }
+    10%,30%{
+        transform:scale(1.25);
+    }
+}
+
+.anniversary{
+    font-size:1rem;
+    opacity:.95;
+    margin-bottom:25px;
+}
+
+.timer-container{
+    margin-bottom:20px;
+    line-height:1.8;
+    font-size:1.1rem;
+}
+
+.quote{
+    max-width:800px;
+    min-height:80px;
+
+    line-height:1.8;
+    font-size:1.1rem;
+
+    margin-top:15px;
+    padding:0 10px;
+
+    position:relative;
+}
+
+.quote::after{
+    content:"|";
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:0;
+    }
+}
+
+.music-control{
+    margin-top:30px;
+}
+
+.music-control button{
+    border:none;
+    cursor:pointer;
+
+    padding:12px 24px;
+    border-radius:30px;
+
+    color:#fff;
+    background:rgba(255,255,255,.18);
+
+    backdrop-filter:blur(5px);
+
+    transition:.3s;
+}
+
+.music-control button:hover{
+    background:rgba(255,255,255,.3);
+}
+
+.particles{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+}
+
+audio{
+    display:none;
+}
+
+@media (max-width:768px){
+
+    h1{
+        font-size:2rem;
     }
 
-    @media (min-width: 1024px) {
-      h1 { font-size: clamp(2.5rem, 6vw, 4rem); }
-      .quote { max-width: 50%; }
-      .music-control button { padding: 0.8rem 1.5rem; font-size: 1.2rem; }
+    .quote{
+        font-size:1rem;
     }
-  </style>
+
+    .timer-container{
+        font-size:1rem;
+    }
+}
+</style>
 </head>
+
 <body>
-  <div class="overlay"></div>
-  <canvas class="particles"></canvas>
-  <div class="content">
-    <!-- 更新标题，显示为订婚倒计时 -->
-    <h1>距离我们订婚还有 <span id="countdownDays"></span> 天 <span class="heart">❤️</span></h1>
-    <div class="timer-container" id="beijingTimeContainer">
-      <div id="datePart"></div>
-      <div id="timePart"></div>
+
+<div class="overlay"></div>
+
+<canvas class="particles"></canvas>
+
+<div class="content">
+
+    <h1>
+        ❤️ 我们已经结婚
+        <span id="weddingDays">0</span>
+        天 ❤️
+    </h1>
+
+    <div class="anniversary">
+        💍 2026年05月20日 · 我们的结婚纪念日
     </div>
-    <!-- 修改引号为订婚相关的语句 -->
+
+    <div class="timer-container">
+        <div id="datePart"></div>
+        <div id="timePart"></div>
+    </div>
+
     <div class="quote" id="quote"></div>
+
     <div class="music-control">
-      <button id="musicToggle">播放音乐 🎵</button>
+        <button id="musicToggle">
+            播放音乐 🎵
+        </button>
     </div>
-  </div>
-  <audio id="bgm" loop preload="none">
+
+</div>
+
+<audio id="bgm" loop>
     <source src="music.mp3" type="audio/mpeg">
-  </audio>
+</audio>
 
-  <script>
-    (function() {
-      "use strict";
+<script>
+(() => {
 
-      const CONFIG = {
-        // 将日期修改为订婚日期：2026年3月7日
-        startDate: new Date("2026-03-07T00:00:00Z"),
-        quotes: [
-          "和你在一起的每一天，都是我最幸福的时光。",
-          "订婚的那一天，是我们爱情故事的新篇章。",
-          "无论时光如何流转，我将永远爱你。",
-          "我们一起走过的每一步，都充满了爱和期待。",
-          "你是我此生最美的遇见，感谢命运让我们相遇。",
-          "从此以后，我的世界里永远只有你。",
-          "和你共度每一刻，我是如此幸运。",
-          "我们的故事，永远不会结束，只会越来越美好。",
-          "每个愿望，都是与你共度未来的梦想。",
-          "今天的你，是我最想守护的人，明天的你，更是。",
-          "这一生，我愿意与你携手，走遍每一个晨昏。",
-          "你的笑容是我最温暖的阳光，照亮我的人生。",
-          "订婚，只是开始，未来的路，我们一同走。",
-          "你是我这一生最想依靠的人。",
-          "爱你，是我最幸运的事。",
-          "和你在一起，世界就是最完美的模样。",
-          "我爱你，直到时间的尽头。"
-        ]
-      };
+"use strict";
 
-      const countdownDaysEl = document.getElementById("countdownDays");
-      const datePartEl = document.getElementById("datePart");
-      const timePartEl = document.getElementById("timePart");
-      const quoteEl = document.getElementById("quote");
-      const audio = document.getElementById("bgm");
-      const toggleBtn = document.getElementById("musicToggle");
-      const canvas = document.querySelector(".particles");
-      const ctx = canvas.getContext("2d");
-      let particles = [];
-      let shuffledQuotes = [...CONFIG.quotes].sort(() => Math.random() - 0.5);
-      let quoteIndex = 0;
+/* =====================
+   配置
+===================== */
 
-      function throttle(fn, delay) {
-        let timer;
-        return function() {
-          if (!timer) {
-            timer = setTimeout(() => { fn(); timer = null; }, delay);
-          }
-        };
-      }
+const CONFIG = {
 
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const particleCount = window.innerWidth < 768 ? 15 : 30;
-        if (particles.length !== particleCount) {
-          particles = Array.from({ length: particleCount }, createParticle);
+    weddingDate: new Date("2026-05-20"),
+
+    quotes: [
+
+        "从恋人到夫妻，我们终于成为了一家人。",
+
+        "余生很长，很幸运身边的人一直是你。",
+
+        "感谢你成为我生命中最重要的人。",
+
+        "有你的地方，就是我最温暖的家。",
+
+        "婚姻不是终点，而是幸福生活的开始。",
+
+        "柴米油盐是生活，而你是生活里的糖。",
+
+        "执子之手，与子偕老。",
+
+        "愿岁月可回首，且以深情共白头。",
+
+        "谢谢你陪我从青丝走向白发。",
+
+        "你是我的爱人，也是我的家人。",
+
+        "今天比昨天更爱你，明天比今天更爱你。",
+
+        "愿我们一起走过每一个春夏秋冬。",
+
+        "婚礼那天的誓言，我会用一生去兑现。",
+
+        "陪伴，是最长情的告白。",
+
+        "平淡日子里的每一份温柔，都与你有关。",
+
+        "往后的每一个清晨和黄昏，都想和你一起度过。",
+
+        "余生请多指教，我最爱的老婆。❤️"
+
+    ]
+};
+
+/* =====================
+   DOM
+===================== */
+
+const weddingDaysEl = document.getElementById("weddingDays");
+const datePartEl = document.getElementById("datePart");
+const timePartEl = document.getElementById("timePart");
+const quoteEl = document.getElementById("quote");
+
+const audio = document.getElementById("bgm");
+const btn = document.getElementById("musicToggle");
+
+const canvas = document.querySelector(".particles");
+const ctx = canvas.getContext("2d");
+
+/* =====================
+   结婚天数
+===================== */
+
+function updateWeddingDays(){
+
+    const now = new Date();
+
+    const start = new Date(
+        CONFIG.weddingDate.getFullYear(),
+        CONFIG.weddingDate.getMonth(),
+        CONFIG.weddingDate.getDate()
+    );
+
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const days = Math.floor(
+        (today - start) / 86400000
+    );
+
+    weddingDaysEl.textContent = days;
+
+    const tomorrow = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()+1
+    );
+
+    setTimeout(updateWeddingDays, tomorrow - now);
+}
+
+/* =====================
+   北京时间
+===================== */
+
+function updateTime(){
+
+    const now = new Date();
+
+    const formatter = new Intl.DateTimeFormat(
+        "zh-CN",
+        {
+            timeZone:"Asia/Shanghai",
+            year:"numeric",
+            month:"2-digit",
+            day:"2-digit",
+            weekday:"long",
+            hour:"2-digit",
+            minute:"2-digit",
+            second:"2-digit",
+            hour12:false
         }
-      }
+    );
 
-      function createParticle() {
-        return {
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          size: Math.min(8 * Math.random() + 4, window.innerWidth * 0.015),
-          speed: Math.random() + 0.5,
-          opacity: Math.random()
-        };
-      }
+    const parts = formatter.formatToParts(now);
 
-      function drawParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgba(255,100,150,0.6)";
-        particles.forEach(p => {
-          ctx.globalAlpha = p.opacity;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size / 2, 0, Math.PI * 2);
-          ctx.fill();
-          p.y -= p.speed;
-          if (p.y < -20) Object.assign(p, createParticle(), { y: canvas.height + 10 });
-        });
-        ctx.globalAlpha = 1;
-      }
+    const get = type =>
+        parts.find(p=>p.type===type)?.value || "";
 
-      function updateCountdownDays() {
-        const now = new Date();
-        const countdownDays = Math.floor((Date.UTC(CONFIG.startDate.getFullYear(), CONFIG.startDate.getMonth(), CONFIG.startDate.getDate()) - Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
-        countdownDaysEl.textContent = countdownDays;
-        const nextDay = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate() + 1));
-        setTimeout(updateCountdownDays, nextDay - now);
-      }
+    datePartEl.textContent =
+        `${get("year")}年${get("month")}月${get("day")}日 ${get("weekday")}`;
 
-      function updateBeijingTime() {
-        const now = new Date();
-        const formatter = new Intl.DateTimeFormat('zh-CN', {
-          timeZone: 'Asia/Shanghai',
-          year: 'numeric', month: '2-digit', day: '2-digit',
-          weekday: 'long', hour: '2-digit', minute: '2-digit', second: '2-digit',
-          hour12: false
-        });
-        const parts = formatter.formatToParts(now);
-        const year = parts.find(p => p.type === 'year').value;
-        const month = parts.find(p => p.type === 'month').value;
-        const day = parts.find(p => p.type === 'day').value;
-        const weekday = parts.find(p => p.type === 'weekday').value;
-        const hours = parts.find(p => p.type === 'hour').value;
-        const minutes = parts.find(p => p.type === 'minute').value;
-        const seconds = parts.find(p => p.type === 'second').value;
-        datePartEl.textContent = `${year}年${month}月${day}日 ${weekday}`;
-        timePartEl.textContent = `${hours}:${minutes}:${seconds}`;
-      }
+    timePartEl.textContent =
+        `${get("hour")}:${get("minute")}:${get("second")}`;
+}
 
-      function typeWriter(text, callback) {
-        quoteEl.textContent = '';
-        let i = 0;
-        const interval = setInterval(() => {
-          quoteEl.textContent += text.charAt(i);
-          i++;
-          if (i >= text.length) {
-            clearInterval(interval);
-            if (callback) setTimeout(callback, 2000);
-          }
-        }, 210);
-      }
+setInterval(updateTime,1000);
 
-      function playQuotes() {
-        const quote = shuffledQuotes[quoteIndex];
-        typeWriter(quote, () => {
-          quoteIndex = (quoteIndex + 1) % shuffledQuotes.length;
-          if (quoteIndex === 0) shuffledQuotes = [...CONFIG.quotes].sort(() => Math.random() - 0.5);
-          playQuotes();
-        });
-      }
+/* =====================
+   打字机
+===================== */
 
-      function fadeAudio(targetVolume, duration = 500, callback) {
-        const startVolume = audio.volume;
-        const startTime = performance.now();
-        function step(now) {
-          const progress = Math.min((now - startTime) / duration, 1);
-          audio.volume = startVolume + (targetVolume - startVolume) * progress;
-          if (progress < 1) {
-            requestAnimationFrame(step);
-          } else if (callback) callback();
+let quotes = [...CONFIG.quotes]
+.sort(()=>Math.random()-0.5);
+
+let quoteIndex = 0;
+
+function typeWriter(text){
+
+    quoteEl.textContent="";
+
+    let i = 0;
+
+    const timer = setInterval(()=>{
+
+        quoteEl.textContent += text[i];
+
+        i++;
+
+        if(i >= text.length){
+
+            clearInterval(timer);
+
+            setTimeout(()=>{
+
+                quoteIndex++;
+
+                if(
+                    quoteIndex >= quotes.length
+                ){
+                    quoteIndex = 0;
+
+                    quotes =
+                    [...CONFIG.quotes]
+                    .sort(()=>Math.random()-0.5);
+                }
+
+                typeWriter(
+                    quotes[quoteIndex]
+                );
+
+            },2500);
         }
-        requestAnimationFrame(step);
-      }
 
-      toggleBtn.addEventListener("click", () => {
-        if (audio.paused) {
-          audio.volume = 1;
-          audio.play().then(() => {
-            toggleBtn.textContent = "暂停音乐 ⏸️";
-          });
-        } else {
-          fadeAudio(0, 500, () => {
-            audio.pause();
-            toggleBtn.textContent = "播放音乐 🎵";
-          });
+    },150);
+}
+
+/* =====================
+   音乐
+===================== */
+
+btn.addEventListener("click",()=>{
+
+    if(audio.paused){
+
+        audio.volume = 1;
+
+        audio.play();
+
+        btn.textContent =
+        "暂停音乐 ⏸️";
+
+    }else{
+
+        audio.pause();
+
+        btn.textContent =
+        "播放音乐 🎵";
+    }
+});
+
+/* =====================
+   粒子特效
+===================== */
+
+let particles = [];
+
+function resizeCanvas(){
+
+    canvas.width =
+    window.innerWidth;
+
+    canvas.height =
+    window.innerHeight;
+
+    const count =
+    window.innerWidth < 768
+    ? 20
+    : 40;
+
+    particles = Array.from(
+        {length:count},
+        createParticle
+    );
+}
+
+function createParticle(){
+
+    return {
+
+        x:Math.random()*canvas.width,
+
+        y:Math.random()*canvas.height,
+
+        size:Math.random()*6+3,
+
+        speed:Math.random()*0.8+0.3,
+
+        opacity:Math.random()*0.8
+    };
+}
+
+function drawParticles(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    particles.forEach(p=>{
+
+        ctx.beginPath();
+
+        ctx.globalAlpha =
+        p.opacity;
+
+        ctx.fillStyle =
+        "#ff7aa8";
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fill();
+
+        p.y -= p.speed;
+
+        if(p.y < -20){
+
+            p.y =
+            canvas.height+20;
+
+            p.x =
+            Math.random()*canvas.width;
         }
-      });
+    });
 
-      addEventListener("resize", throttle(resizeCanvas, 200));
-      resizeCanvas();
+    ctx.globalAlpha = 1;
 
-      document.addEventListener("DOMContentLoaded", () => {
-        playQuotes();
-        updateCountdownDays();
-        updateBeijingTime();
-        setInterval(updateBeijingTime, 1000);
-      });
+    requestAnimationFrame(
+        drawParticles
+    );
+}
 
-      (function animateParticles() {
-        drawParticles();
-        requestAnimationFrame(animateParticles);
-      })();
-    })();
-  </script>
+/* =====================
+   初始化
+===================== */
+
+resizeCanvas();
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+updateWeddingDays();
+
+updateTime();
+
+typeWriter(quotes[0]);
+
+drawParticles();
+
+})();
+</script>
+
 </body>
 </html>
